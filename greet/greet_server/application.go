@@ -1,6 +1,7 @@
 package greet_server
 
 import (
+	"context"
 	"github.com/Anatol-e/grpcapp/greet/greetpb"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -8,6 +9,15 @@ import (
 )
 
 type server struct {
+}
+
+func (s *server) Greet(ctx context.Context, request *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	firstname := request.GetGreeting().GetFirstName()
+	result := "Hello " + firstname
+	res := &greetpb.GreetResponse{
+		Result: result,
+	}
+	return res, nil
 }
 
 func StartApplication() {
