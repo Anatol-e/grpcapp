@@ -25,8 +25,12 @@ func init() {
 }
 
 func main() {
-	appType := os.Args[1]
-	log.Info(appType)
+	appArgs := os.Args
+	if len(appArgs) <= 1 {
+		log.Fatal("Unknown application type! Must be server [s] or client [c]")
+	}
+
+	appType := appArgs[1]
 	switch appType {
 	case server:
 		log.Info("Starting server...")
