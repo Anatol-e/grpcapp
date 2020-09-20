@@ -2,10 +2,14 @@ package greet_server
 
 import (
 	"context"
+	"fmt"
 	"github.com/Anatol-e/grpcapp/greet/greetpb"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"io"
+	"math"
 	"net"
 	"strconv"
 )
@@ -51,6 +55,20 @@ func (s *server) GreetManyTimes(
 		stream.Send(response)
 	}
 	return nil
+}
+
+func (s *server) SquareRoot(ctx context.Context, req *greetpb.SquareRootRequest) (*greetpb.SquareRootResponse, error) {
+	log.Info("Receiving data SquareRoot")
+	number := req.GetNumber()
+	if number < 0 {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Received a negative number : %v", number),
+		)
+	}
+	return &greetpb.SquareRootResponse{
+		NumberRoot: math.Sqrt(float64(number)),
+	}, nil
 }
 
 func StartApplication() {

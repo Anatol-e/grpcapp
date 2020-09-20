@@ -32,6 +32,14 @@ message GreetLongResponse {
   string result = 1;
 }
 
+message SquareRootRequest {
+  int32 number = 1;
+}
+
+message SquareRootResponse {
+  double  number_root = 1;
+}
+
 service GreetService {
   // Unary
   rpc Greet(GreetRequest) returns (GreetResponse) {};
@@ -39,4 +47,6 @@ service GreetService {
   rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesResponse) {};
   // Client Streaming
   rpc LongGreet(stream GreetLongRequest) returns (GreetLongResponse) {};
+
+  rpc SquareRoot(SquareRootRequest) returns (SquareRootResponse) {};
 }

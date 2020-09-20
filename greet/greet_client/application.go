@@ -21,6 +21,7 @@ func StartApplication() {
 	doUnary(c)
 	doServerStreaming(c)
 	doClientStreaming(c)
+	doErrorUnary(c)
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -79,4 +80,28 @@ func doClientStreaming(c greetpb.GreetServiceClient) {
 	}
 
 	log.Infof("Result Client Streaming : %v", res.Result)
+}
+
+func doErrorUnary(c greetpb.GreetServiceClient) {
+	log.Info("Starting do error unary rpc")
+
+	// correct call
+	res, err := c.SquareRoot(context.Background(), &greetpb.SquareRootRequest{
+		Number: 25,
+	})
+	if err != nil {
+		log.Infof("response finished with an error %v", err)
+	} else {
+		log.Infof("Response result : %v ", res.NumberRoot)
+	}
+
+	// error call
+	res, err = c.SquareRoot(context.Background(), &greetpb.SquareRootRequest{
+		Number: -25,
+	})
+	if err != nil {
+		log.Infof("response finished with an error %v", err)
+	} else {
+		log.Infof("Response result : %v ", res.NumberRoot)
+	}
 }
