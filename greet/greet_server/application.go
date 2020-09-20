@@ -5,9 +5,9 @@ import (
 	"github.com/Anatol-e/grpcapp/greet/greetpb"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"io"
 	"net"
 	"strconv"
-	"time"
 )
 
 type server struct {
@@ -23,6 +23,22 @@ func (s *server) Greet(ctx context.Context, request *greetpb.GreetRequest) (*gre
 	return res, nil
 }
 
+func (s *server) LongGreet(stream greetpb.GreetService_LongGreetServer) error {
+	var msg *greetpb.GreetLongRequest
+	var err error
+	result := ""
+	for ; err != io.EOF; msg, err = stream.Recv() {
+		if err != nil {
+			log.Fatalf("error when receiving stream %v ", err)
+			return err
+		}
+		result += msg.GetGreeting().GetFirstName() + "\n"
+	}
+	return stream.SendAndClose(&greetpb.GreetLongResponse{
+		Result: result,
+	})
+}
+
 func (s *server) GreetManyTimes(
 	request *greetpb.GreetManyTimesRequest,
 	stream greetpb.GreetService_GreetManyTimesServer) error {
@@ -33,7 +49,6 @@ func (s *server) GreetManyTimes(
 			Result: result,
 		}
 		stream.Send(response)
-		time.Sleep(600 * time.Millisecond)
 	}
 	return nil
 }

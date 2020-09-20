@@ -20,6 +20,7 @@ func StartApplication() {
 
 	doUnary(c)
 	doServerStreaming(c)
+	doClientStreaming(c)
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -56,4 +57,26 @@ func doServerStreaming(c greetpb.GreetServiceClient) {
 		}
 		log.Infof("Response from GreetManyTimes : %v ", msg)
 	}
+}
+
+func doClientStreaming(c greetpb.GreetServiceClient) {
+	req := &greetpb.GreetLongRequest{
+		Greeting: &greetpb.Greeting{
+			FirstName: "Anatol",
+			LastName:  "Kozhukhar",
+		},
+	}
+	stream, err := c.LongGreet(context.Background())
+	if err != nil {
+		log.Fatalf("can't make long greet stream with err : %v ", err)
+	}
+	for i := 0; i < 10; i++ {
+		stream.Send(req)
+	}
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("can't get response %v ", err)
+	}
+
+	log.Infof("Result Client Streaming : %v", res.Result)
 }
