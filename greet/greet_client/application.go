@@ -5,17 +5,26 @@ import (
 	"github.com/Anatol-e/grpcapp/greet/greetpb"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"io"
 )
 
 func StartApplication() {
-	log.Info("Hello, I'm client")
-	cc, err := grpc.Dial(":8080", grpc.WithInsecure())
+	// No SSL
+	// cc, err := grpc.Dial(":8080", grpc.WithInsecure())
+
+	// SSL
+	certFile := "ssl/ca.crt"
+	creds, sslError := credentials.NewClientTLSFromFile(certFile, "localhost")
+	if sslError != nil {
+		log.Fatalf("Failing loading certificates : %v", sslError)
+	}
+	cc, err := grpc.Dial(":8080", grpc.WithTransportCredentials(creds))
+
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer cc.Close()
-
 	c := greetpb.NewGreetServiceClient(cc)
 
 	doUnary(c)

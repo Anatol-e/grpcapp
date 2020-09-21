@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"io"
 	"math"
@@ -72,13 +73,23 @@ func (s *server) SquareRoot(ctx context.Context, req *greetpb.SquareRootRequest)
 }
 
 func StartApplication() {
+	// No SSL
+	//s := grpc.NewServer()
+
+	// SSL
+	certFile := "ssl/server.crt"
+	keyFile := "ssl/server.pem"
+	creds, sslErr := credentials.NewServerTLSFromFile(certFile, keyFile)
+	if sslErr != nil {
+		log.Fatalf("Failing loading certificates : %v", sslErr)
+	}
+	s := grpc.NewServer(grpc.Creds(creds))
+	greetpb.RegisterGreetServiceServer(s, &server{})
+
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	s := grpc.NewServer()
-	greetpb.RegisterGreetServiceServer(s, &server{})
 
 	log.Info("Listening...")
 	if err := s.Serve(lis); err != nil {
