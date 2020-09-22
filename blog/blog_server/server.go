@@ -2,7 +2,6 @@ package blog_server
 
 import (
 	"github.com/Anatol-e/grpcapp/blog/blogpb"
-	"github.com/Anatol-e/grpcapp/greet/greetpb"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -10,8 +9,7 @@ import (
 	"net"
 )
 
-type server {
-
+type server struct {
 }
 
 func main() {
