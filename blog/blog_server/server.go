@@ -46,7 +46,7 @@ func main() {
 		log.Fatalf("Can't insert row %v", err)
 	}
 
-	result, err := collection.Find(ctx, bson.D{{"id",1}})
+	result, err := collection.Find(ctx, bson.D{{"id", 1}})
 	if err != nil {
 		log.Fatalf("Can't find data %v", err)
 	}
