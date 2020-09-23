@@ -13,7 +13,7 @@ openssl genrsa -passout pass:${PASS} -des3 -out server.key 4096
 openssl req -passin pass:${PASS} -new -key server.key -out server.csr -subj "/CN=${SERVER_CN}"
 
 # Step 4: Sign the certificate with the CA we created (it's called self signing) -server.crt
-openssl x509 -req -passin pass:${PASS} -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt
+openssl x509 -req -passin pass:${PASS} -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt -extfile extfile.cnf
 
 # Step 5: Convert the server certificate to .pem format (server.pem) - usable by gRPC
 openssl pkcs8 -topk8 -nocrypt -passin pass:${PASS} -in server.key -out server.pem
